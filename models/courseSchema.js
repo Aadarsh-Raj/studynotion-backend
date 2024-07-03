@@ -27,7 +27,7 @@ const courseSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    Instructor: {
+    instructor: {
       type: mongoose.Schema.Types.ObjectId,
       require: true,
     },
@@ -45,7 +45,7 @@ const courseSchema = new mongoose.Schema(
     },
 
     thumbnail: {
-      type: String,
+      type: [],
       require: false,
     },
     studentsEnrolled: {
@@ -54,11 +54,18 @@ const courseSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      require: true,
+      require: false,
+      default:true
     },
     courseProgress:{
         type: Number,
-        require: true
+        require: false,
+        default: 0
+    },
+    courseDuration:{
+      type: String,
+      require: false,
+      default: 0
     }
   },
   {
