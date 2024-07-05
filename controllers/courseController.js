@@ -77,13 +77,32 @@ const getTeacherCourseWithId = async (req, res) => {
 const getAllCourses = async (req, res) => {
   try {
     const courses = await CourseModel.find({});
+    const newResult = courses.map((course) => {
+      let sum = 0;
+      if (course.ratingAndReviews && course.ratingAndReviews.length > 0) {
+        course.ratingAndReviews.forEach((rating) => {
+          sum += rating.rating;
+        });
+      }
+      const totalRating = (sum / (course.ratingAndReviews.length * 5)) * 5;
+      return {
+        ...course.toObject(),
+        totalRating: totalRating ? totalRating : 0,
+      };
+    });
 
     res.status(201).json({
       success: true,
       message: "Courses Found",
-      result: courses,
+      result: newResult,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server down",
+    });
+  }
 };
 
 // enroll student to the course
@@ -120,10 +139,104 @@ const enrollStudent = async (req, res) => {
     });
   }
 };
+
+const giveRating = async (req, res) => {
+  const courseId = Object.keys(req.query)[0];
+  const rating = req.query[courseId];
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid course",
+      });
+    }
+    if (!course.studentsEnrolled.includes(req.user.id)) {
+      return res.status(401).json({
+        success: false,
+        message: "First enroll yourself",
+      });
+    }
+
+    const existingRatingIndex = course.ratingAndReviews.findIndex(
+      (ratingObj) => ratingObj.user.toString() === req.user.id
+    );
+    if (existingRatingIndex !== -1) {
+      // If user already rated, update the existing rating
+      course.ratingAndReviews[existingRatingIndex].rating = parseInt(rating);
+    } else {
+      course.ratingAndReviews.push({
+        user: req.user.id,
+        rating: parseInt(rating),
+      });
+    }
+    await course.save();
+    res.status(200).json({
+      success: true,
+      message: "Rating submitted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server down",
+    });
+  }
+};
+const giveReview = async (req, res) => {
+  const courseid = req.params.courseid;
+  const review = req.body.review;
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const course = await CourseModel.findById(courseid);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid course",
+      });
+    }
+    if (!course.studentsEnrolled.includes(req.user.id)) {
+      return res.status(401).json({
+        success: false,
+        message: "First enroll yourself",
+      });
+    }
+    course.ratingAndReviews.push({
+      user: req.user.id,
+      review: review,
+    });
+    await course.save();
+    res.status(200).json({
+      success: true,
+      message: "Review uploaded successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server down",
+    });
+  }
+};
 // get courses of particular student
 module.exports = {
   createCourse,
   getTeacherCourseWithId,
   getAllCourses,
+  giveRating,
+  giveReview,
   enrollStudent,
 };

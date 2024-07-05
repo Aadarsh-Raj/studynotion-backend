@@ -4,10 +4,12 @@ const ratingSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       require: true,
+      unique: true
     },
     rating: {
       type: Number,
-      require: true,
+      require: false,
+      default:0
     },
     reviews: {
       type: String,

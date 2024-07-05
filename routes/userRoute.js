@@ -35,7 +35,7 @@ router.put("/update/verified/profile",   authMiddleware(["student", "instructor"
 userController.updateVerifiedUser
 )
 
-
+router.get("/findname/:userid", userController.getUserName);
 // wishlist
 router.patch(
   "/wishlist/:courseid",

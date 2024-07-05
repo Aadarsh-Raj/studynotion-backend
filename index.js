@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const app = express();
 const userRoute = require("./routes/userRoute");
 const courseRoute = require("./routes/couseRoute");
+const orderRoute = require("./routes/orderRoute")
 const dotenv = require("dotenv");
 const { authMiddleware } = require("./middleware/tokenAuth");
 const contactVerificationRoute = require("./routes/contactUpdationRoute");
@@ -26,11 +27,17 @@ app.use("/api/user", userRoute);
 // crud course
 app.use("/api/course", courseRoute);
 // otp verification route
-app.use("/api/otp",authMiddleware(["student", "instructor", "admin"]),contactVerificationRoute)
+app.use("/api/otp",authMiddleware(["student", "instructor", "admin"]),contactVerificationRoute);
+
 // crud invoice
+app.use("/api/order", orderRoute)
 // app.use("/api/invoice");
 app.listen(process.env.PORT, () => {
   console.log(
     `Server is high and running at http://localhost:${process.env.PORT}`
   );
 });
+
+
+
+// click to enroll --> payment gateway --> create invoice

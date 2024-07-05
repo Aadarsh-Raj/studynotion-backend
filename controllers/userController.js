@@ -248,7 +248,7 @@ const addWishlistItem = async (req, res) => {
   console.log(req.params.courseid);
   try {
     const course = await CourseModel.findById(req.params.courseid);
-    console.log(course)
+    console.log(course);
 
     const user = await UserModel.findById(req.user.id);
     if (!user) {
@@ -289,6 +289,23 @@ const addWishlistItem = async (req, res) => {
       message: "Server down",
     });
   }
+};
+const getUserName = async (req, res) => {
+  const otherUser = req.params.userid;
+  try {
+    const user = await UserModel.findById(otherUser);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.status(201).json({
+      success: true,
+      message: "User found",
+      result: user.name,
+    });
+  } catch (error) {}
 };
 // delete user
 const deleteUser = async (req, res) => {
@@ -338,6 +355,7 @@ module.exports = {
   updateUser,
   updateVerifiedUser,
   addWishlistItem,
+  getUserName,
   deleteUser,
   logoutUser,
 };

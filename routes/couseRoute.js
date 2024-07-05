@@ -22,8 +22,21 @@ router.get(
 
 // get all courses 
 router.get("/courses",courseController.getAllCourses)
+// give rating for particular course
+router.put("/rating/upload",   authMiddleware(["instructor", "student", "admin"]),
+courseController.giveRating
+)
+// give review for particular course
 
-
+router.put("/review/upload/:courseid",   authMiddleware(["instructor", "student", "admin"]),
+courseController.giveReview
+)
 // get id of user and course and then enroll student to the course
 router.patch("/enroll/:courseid",authMiddleware(["student"]), courseController.enrollStudent )
+
+
+
+
+
+
 module.exports = router;
