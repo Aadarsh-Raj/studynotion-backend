@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
       let token;
       if (user.token) {
         try {
-          const data = jwt.veriry(user.token, process.env.JWT_SECRET_KEY);
+          const data = jwt.verify(user.token, process.env.JWT_SECRET_KEY);
           if (data) {
             return res.status(400).json({
               success: false,
