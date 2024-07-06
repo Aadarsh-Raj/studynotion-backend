@@ -232,6 +232,95 @@ const giveReview = async (req, res) => {
   }
 };
 // get courses of particular student
+
+const updateCourse = async (req, res) => {
+  const courseId = req.params.courseid;
+  const key = Object.keys(req.query)[0];
+  const value = req.query[key];
+
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      return res.statur(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+    if (req.user.id != course.instructor) {
+      return res.status(401).json({
+        success: false,
+        message: "You are not authorized",
+      });
+    }
+    if (!value || key === "thumbnail") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid inputs",
+      });
+    }
+
+    course[key] = value;
+    await course.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Course updated",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server down",
+    });
+  }
+};
+const updateCourseImages = async (req, res) => {
+  const courseId = req.params.courseid;
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      return res.statur(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+    if (req.user.id != course.instructor) {
+      return res.status(401).json({
+        success: false,
+        message: "You are not authorized",
+      });
+    }
+
+    const uploadedImage = req.files.map((file) => file.path);
+    console.log(uploadedImage);
+    course.thumbnail = uploadedImage;
+    await course.save();
+    res.status(201).json({
+      success: true,
+      message: "Course images uploaded successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server down",
+    });
+  }
+};
 module.exports = {
   createCourse,
   getTeacherCourseWithId,
@@ -239,4 +328,6 @@ module.exports = {
   giveRating,
   giveReview,
   enrollStudent,
+  updateCourseImages,
+  updateCourse,
 };
