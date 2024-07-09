@@ -71,7 +71,33 @@ const getTeacherCourseWithId = async (req, res) => {
     });
   }
 };
+// get student enrolled courses
+const getStudentCourseWithId = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const result = await CourseModel.find({
+      studentsEnrolled: { $in: [req.user.id] },
+    });
 
+    res.status(200).json({
+      success: true,
+      message: "Course found",
+      result: result,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server down",
+    });
+  }
+};
 // get all courses
 
 const getAllCourses = async (req, res) => {
@@ -329,5 +355,6 @@ module.exports = {
   giveReview,
   enrollStudent,
   updateCourseImages,
+  getStudentCourseWithId,
   updateCourse,
 };

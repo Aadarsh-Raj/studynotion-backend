@@ -20,6 +20,7 @@ router.get(
   courseController.getTeacherCourseWithId
 );
 
+router.get("/getcourse/enrolled/:studentid",authMiddleware(["instructor", "student", "admin"]), courseController.getStudentCourseWithId)
 // get all courses
 router.get("/courses", courseController.getAllCourses);
 // give rating for particular course

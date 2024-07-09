@@ -33,9 +33,10 @@ app.use(
   contactVerificationRoute
 );
 
-// crud invoice
-app.use("/api/order", orderRoute);
-// app.use("/api/invoice");
+// crud invoice/order
+app.use("/api/order",authMiddleware(["student", "instructor", "admin"]), orderRoute);
+
+
 app.listen(process.env.PORT, () => {
   console.log(
     `Server is high and running at http://localhost:${process.env.PORT}`
