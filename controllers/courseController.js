@@ -240,10 +240,20 @@ const giveReview = async (req, res) => {
         message: "First enroll yourself",
       });
     }
-    course.ratingAndReviews.push({
-      user: req.user.id,
-      review: review,
-    });
+    const existingReviewIndex = course.ratingAndReviews.findIndex(
+      (item) => item.user.toString() === req.user.id.toString()
+    );
+    if (existingReviewIndex !== -1) {
+      // Update the existing review
+      course.ratingAndReviews[existingReviewIndex].reviews = review;
+    } else {
+      // Add a new review
+      course.ratingAndReviews.push({
+        user: req.user.id,
+        reviews: review,
+      });
+    }
+   
     await course.save();
     res.status(200).json({
       success: true,

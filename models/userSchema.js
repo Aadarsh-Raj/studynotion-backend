@@ -48,13 +48,13 @@ const userSchema = new mongoose.Schema(
     wishlist: {
       type: [mongoose.Schema.Types.ObjectId],
       require: false,
-      ref:"courses",
+      ref: "courses",
       defualt: [],
     },
     photo: {
       type: String,
       require: false,
-    }
+    },
   },
   {
     timestamps: true,
@@ -69,5 +69,6 @@ userSchema.pre("save", function (next) {
   }
   next();
 });
+
 const UserModel = mongoose.model("users", userSchema);
 module.exports = UserModel;
