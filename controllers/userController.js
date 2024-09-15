@@ -62,22 +62,7 @@ const loginUser = async (req, res) => {
         role: user.role,
         exp: expiryDateTime,
       };
-      let token;
-      if (user.token) {
-        try {
-          const data = jwt.verify(user.token, process.env.JWT_SECRET_KEY);
-          if (data) {
-            return res.status(400).json({
-              success: false,
-              message: "First log out please",
-            });
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      } else {
-        token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
-      }
+      let token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
       await UserModel.findByIdAndUpdate(user.id, { $set: { token: token } });
       res.json({
         success: true,
@@ -95,8 +80,8 @@ const loginUser = async (req, res) => {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Server down"
-    })
+      message: "Server down",
+    });
   }
 };
 
