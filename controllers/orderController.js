@@ -12,6 +12,8 @@ const razorpay = new Razorpay({
 
 const createOrder = async (req, res) => {
   const courseId = req.params.courseid;
+  const transactionId = req.body.transactionId;
+  console.log(courseId, transactionId)
   try {
     const user = await UserModel.findById(req.user.id);
     const course = await CourseModel.findById(courseId);
@@ -27,17 +29,23 @@ const createOrder = async (req, res) => {
         message: "Course not found",
       });
     }
-
+    let purchased = false;
+    if (transactionId) {
+      purchased = true;
+    }
     const orderDetails = {
       courseId: course._id,
       userId: user._id,
       price: course.price,
+      transactionId,
+      purchased,
     };
 
-    await OrderModel.create(orderDetails);
+    const order = await OrderModel.create(orderDetails);
     res.status(201).json({
       success: true,
-      message: "Order created successfully",
+      message: "Order purchased successfully",
+      order,
     });
   } catch (error) {
     console.log(error);

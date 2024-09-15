@@ -8,6 +8,15 @@ const orderRoute = require("./routes/orderRoute");
 const dotenv = require("dotenv");
 const { authMiddleware } = require("./middleware/tokenAuth");
 const contactVerificationRoute = require("./routes/contactUpdationRoute");
+dotenv.config();
+const stripe = require("stripe")(
+  // This is your test secret API key.
+  process.env.STRIPE_SECRET_KEY,
+  {
+    apiVersion: "2023-10-16",
+  }
+);
+
 const morgan = require("morgan");
 app.use(cors({ origin: "*" }));
 dotenv.config();
@@ -21,6 +30,8 @@ mongoose
   .catch((e) => {
     console.log(e);
   });
+// integrated stripe
+
 app.use(morgan("dev"));
 // crud user
 app.use("/api/user", userRoute);
@@ -52,4 +63,3 @@ app.listen(process.env.PORT, () => {
   );
 });
 
-// click to enroll --> payment gateway --> create invoice

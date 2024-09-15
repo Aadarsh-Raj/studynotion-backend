@@ -21,9 +21,14 @@ const orderSchema = new mongoose.Schema(
       require: true,
       default: Date.now,
     },
+    purchased:{
+      type:Boolean,
+      default: false,
+    },
     transactionId: {
       type: String,
       require: false,
+      unique: true,
     },
     modeOfPayment: {
       type: String,
