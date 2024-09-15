@@ -34,9 +34,18 @@ app.use(
 );
 
 // crud invoice/order
-app.use("/api/order",authMiddleware(["student", "instructor", "admin"]), orderRoute);
+app.use(
+  "/api/order",
+  authMiddleware(["student", "instructor", "admin"]),
+  orderRoute
+);
 
-
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log error stack to the console
+  res
+    .status(500)
+    .json({ success: false, message: "Something went wrong, try again later" });
+});
 app.listen(process.env.PORT, () => {
   console.log(
     `Server is high and running at http://localhost:${process.env.PORT}`
