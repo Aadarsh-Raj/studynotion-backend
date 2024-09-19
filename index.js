@@ -57,9 +57,9 @@ app.use((err, req, res, next) => {
     .status(500)
     .json({ success: false, message: "Something went wrong, try again later" });
 });
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT,"0.0.0.0" ,() => {
   console.log(
-    `Server is high and running at http://localhost:${process.env.PORT}`
+    `Server is high and running at http://0.0.0.0:${process.env.PORT}`
   );
 });
 
