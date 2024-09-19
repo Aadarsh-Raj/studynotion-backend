@@ -1,6 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const https = require("https");
+const fs = require("fs");
+// Load SSL certificates
+const privateKey = fs.readFileSync('/home/ec2-user/ssl/private.key', 'utf8');
+const certificate = fs.readFileSync('/home/ec2-user/ssl/certificate.crt', 'utf8');        
+const credentials = { key: privateKey, cert: certificate };
 const app = express();
 const userRoute = require("./routes/userRoute");
 const courseRoute = require("./routes/couseRoute");
@@ -18,7 +24,7 @@ const stripe = require("stripe")(
 );
 
 const morgan = require("morgan");
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin:["https://main--arya-studynotion.netlify.app","http://0.0.0.0:4000", "http://localhost:3000"] }));
 dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -57,10 +63,10 @@ app.use((err, req, res, next) => {
     .status(500)
     .json({ success: false, message: "Something went wrong, try again later" });
 });
-app.listen(process.env.PORT,"0.0.0.0" ,() => {
-  console.log(
-    `Server is high and running at http://0.0.0.0:${process.env.PORT}`
-  );
+
+
+// Create HTTPS server
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(process.env.PORT, "0.0.0.0", () => {
+  console.log(`Server is running at https://0.0.0.0:${process.env.PORT}`);
 });
-
-
